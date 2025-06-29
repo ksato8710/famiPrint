@@ -4,11 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:3003": "next dev --port 3003",
+    "start-server": "node server-starter.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.50.2",
     "next": "^13.5.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0"

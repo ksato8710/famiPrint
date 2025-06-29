@@ -6,19 +6,17 @@ Next.js --> Supabase Postgres : REST RPC (prints テーブル)
 @enduml
 
 ディレクトリ構成（抜粋）
-src/
-  app/
-    page.tsx            # 一覧
-    upload/page.tsx     # アップロード
-    print/[id]/page.tsx # 詳細
-  components/
-    UploadForm.tsx
-    PrintCard.tsx
-    DetailModal.tsx
-  features/print/
-    hooks.ts            # CRUD ヘルパ
-    types.ts
+app/
+  page.tsx            # 一覧
+  upload/page.tsx     # アップロード
+  print/[id]/page.tsx # 詳細
+components/
+  UploadForm.tsx
+  PrintCard.tsx
+  DetailModal.tsx
+hooks/
+  usePrints.ts        # CRUD ヘルパ
 lib/
-  supabase.ts           # createClient ラッパ
+  storage.ts          # Supabase Storage ラッパー
 public/
   icons/*               # アイコン類

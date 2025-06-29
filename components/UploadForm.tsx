@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { uploadMultiplePrints } from '@/lib/storage';
 
 interface UploadFormProps {
   onUploaded: (urls: string[]) => void;
@@ -12,7 +13,7 @@ export default function UploadForm({ onUploaded }: UploadFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (files: FileList) => {
-    const validFiles = Array.from(files).filter(file => 
+    const validFiles = Array.from(files).filter(file =>
       file.type.startsWith('image/')
     );
 
@@ -24,15 +25,13 @@ export default function UploadForm({ onUploaded }: UploadFormProps) {
     setIsUploading(true);
     
     try {
-      const urls: string[] = [];
-      
-      for (const file of validFiles) {
-        // ここでは仮のURLを生成（実際のストレージ実装後に置き換える）
-        const mockUrl = URL.createObjectURL(file);
-        urls.push(mockUrl);
-      }
+      const urls = await uploadMultiplePrints(validFiles);
       
       onUploaded(urls);
+      
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (error) {
       console.error('Upload failed:', error);
       alert('アップロードに失敗しました');
@@ -66,10 +65,6 @@ export default function UploadForm({ onUploaded }: UploadFormProps) {
     }
   };
 
-  const handleClick = () => {
-    fileInputRef.current?.click();
-  };
-
   return (
     <div className="w-full max-w-2xl mx-auto">
       <div
@@ -85,17 +80,20 @@ export default function UploadForm({ onUploaded }: UploadFormProps) {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={handleClick}
+        
       >
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept="image/*"
-          className="hidden"
-          onChange={handleInputChange}
-          disabled={isUploading}
-        />
+        <label htmlFor="file-upload">
+          <input
+            id="file-upload"
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/*"
+            className="hidden"
+            onChange={handleInputChange}
+            disabled={isUploading}
+          />
+        </label>
         
         {isUploading ? (
           <div className="flex flex-col items-center space-y-4">

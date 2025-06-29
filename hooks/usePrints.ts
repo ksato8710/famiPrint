@@ -7,6 +7,7 @@ export function usePrints() {
   const [prints, setPrints] = useState<PrintData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
 
   const loadPrints = useCallback(async () => {
     try {
@@ -14,6 +15,10 @@ export function usePrints() {
       setError(null);
       const allPrints = await getAllPrints();
       setPrints(allPrints.reverse()); // 新しい順に表示
+
+      // Extract unique categories
+      const uniqueCategories = Array.from(new Set(allPrints.map(print => print.category).filter(Boolean) as string[]));
+      setCategories(uniqueCategories);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load prints');
       console.error('Failed to load prints:', err);
@@ -69,5 +74,6 @@ export function usePrints() {
     updateCategory,
     removePrint,
     refreshPrints,
+    categories,
   };
 }

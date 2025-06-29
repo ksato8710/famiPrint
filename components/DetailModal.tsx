@@ -58,7 +58,8 @@ export default function DetailModal({ print, onClose, onCategoryUpdate }: Detail
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const formatDate = (date: Date) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat('ja-JP', {
       year: 'numeric',
       month: 'long',
@@ -82,7 +83,7 @@ export default function DetailModal({ print, onClose, onCategoryUpdate }: Detail
           <div className="flex-1">
             <h2 className="text-lg font-semibold truncate">{print.filename}</h2>
             <p className="text-sm text-gray-500">
-              {formatDate(print.uploadedAt)}
+              {formatDate(print.uploaded_at)}
             </p>
           </div>
           <button
