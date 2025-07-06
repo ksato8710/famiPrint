@@ -1,1 +1,1 @@
-self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/satokeita/Dev/famiPrint/famiPrint/app/layout\":[\"static/media/f2dba9fbcf2f771b-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
+self.__NEXT_FONT_MANIFEST='{"pages":{},"app":{"/Users/satokeita/Dev/famiPrint/famiPrint/app/layout":["static/media/f2dba9fbcf2f771b-s.p.woff2"]},"appUsingSizeAdjust":true,"pagesUsingSizeAdjust":false}';

@@ -17,7 +17,7 @@ export default function TableContent() {
 
       try {
         const { data: tableData, error: tableError } = await supabase
-          .from(tableName)
+          .from(tableName as "prints" | "categories")
           .select('*');
 
         if (tableError) {

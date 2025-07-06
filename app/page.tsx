@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import MasonryGrid from '@/components/MasonryGrid';
-import DetailModal from '@/components/DetailModal';
+
 import Modal from '@/components/Modal';
 import CategoryEditor from '@/components/CategoryEditor';
 import { usePrints } from '@/hooks/usePrints';
