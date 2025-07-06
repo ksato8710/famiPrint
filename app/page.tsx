@@ -1,103 +1,126 @@
 'use client';
 
 import { useState } from 'react';
-import UploadForm from '@/components/UploadForm';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import MasonryGrid from '@/components/MasonryGrid';
 import DetailModal from '@/components/DetailModal';
-import CategoryEditor from '@/components/CategoryEditor'; // Import CategoryEditor
+import Modal from '@/components/Modal';
+import CategoryEditor from '@/components/CategoryEditor';
 import { usePrints } from '@/hooks/usePrints';
 import { PrintData } from '@/lib/storage';
 
+// M3 Icon components
+const AddIcon = () => <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>;
+const CheckIcon = () => <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>;
+
+// Tab Component for Family Members
+const FamilyTab = ({ text, selected, onClick }: { text: string; selected: boolean; onClick: () => void; }) => (
+  <button 
+    onClick={onClick}
+    className={`family-tab ${selected ? 'selected' : ''}`}
+  >
+    {text}
+    {selected && (
+      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary transform scale-x-100 transition-transform duration-200" />
+    )}
+  </button>
+);
+
+// Chip Component for Categories
+const CategoryChip = ({ text, selected, onClick }: { text: string; selected: boolean; onClick: () => void; }) => (
+  <button 
+    onClick={onClick}
+    className={`category-chip ${selected ? 'selected' : ''}`}
+  >
+    {selected && <span className="check-icon-container"><CheckIcon /></span>}
+    {text}
+  </button>
+);
+
 export default function Home() {
-  const { prints, isLoading, updateCategory, refreshPrints, categories } = usePrints();
+  const router = useRouter();
   const [selectedPrint, setSelectedPrint] = useState<PrintData | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategoryEditor, setShowCategoryEditor] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const familyMembers = ['かえで', 'しおり', 'あん', 'ママ', 'パパ'];
+  const [selectedFamilyMember, setSelectedFamilyMember] = useState<string | null>(null);
 
-  const handleUploaded = async (urls: string[]) => {
-    console.log('Successfully uploaded:', urls.length, 'files');
-    
-    // Reload prints to get the latest data
-    refreshPrints();
-  };
+  const { prints, isLoading, updateCategory, refreshPrints, categories } = usePrints(selectedFamilyMember);
 
   const handlePrintClick = (print: PrintData) => {
-    setSelectedPrint(print);
+    console.log('handlePrintClick called for:', print.id);
+    router.push(`/print/${print.id}`); // Navigate to detail page
+    console.log('Attempting to navigate to:', `/print/${print.id}`);
   };
 
-  const filteredPrints = selectedCategory
-    ? prints.filter(print => print.category === selectedCategory)
+  const filteredByCategory = selectedCategory
+    ? prints.filter(print => print.category_name === selectedCategory)
     : prints;
 
+  const searchedPrints = searchTerm
+    ? filteredByCategory.filter(print =>
+        print.filename.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : filteredByCategory;
+
   return (
-    <main className="min-h-screen p-4 sm:p-8">
-      <div className="max-w-6xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">FamiPrint</h1>
-          <p className="text-gray-600">
-            家族写真のプリント管理アプリ
-          </p>
-        </header>
-
-        <section className="mb-8">
-          <UploadForm onUploaded={handleUploaded} />
-        </section>
-
-        <section className="mb-8">
-          <div className="flex flex-wrap gap-2 justify-center">
-            <button
-              onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-2 rounded-full text-sm font-medium 
-                ${selectedCategory === null ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
-              `}
-            >
-              すべて
-            </button>
-            {categories.map(category => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium 
-                  ${selectedCategory === category ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
-                `}
-              >
-                {category}
+    <div className="page-container">
+      <main className="main-content">
+        {/* Filters */}
+        <div className="filters-section">
+          {/* Family Tabs */}
+          <section className="family-tabs-section">
+            <div className="family-tabs-container">
+              <FamilyTab text="全員" selected={selectedFamilyMember === null} onClick={() => setSelectedFamilyMember(null)} />
+              {familyMembers.map(member => (
+                <FamilyTab key={member} text={member} selected={selectedFamilyMember === member} onClick={() => setSelectedFamilyMember(member)} />
+              ))}
+            </div>
+          </section>
+          {/* Category Chips */}
+          <section>
+            <div className="category-chips-container">
+              <CategoryChip key="all-categories" text="#すべて" selected={selectedCategory === null} onClick={() => setSelectedCategory(null)} />
+              {categories.map(category => (
+                <CategoryChip key={category.id} text={`#${category.name}`} selected={selectedCategory === category.name} onClick={() => setSelectedCategory(category.name)} />
+              ))}
+              <button onClick={() => setShowCategoryEditor(true)} className="category-manage-button">
+                カテゴリ管理
               </button>
-            ))}
-            <button
-              onClick={() => setShowCategoryEditor(true)}
-              className="px-4 py-2 rounded-full text-sm font-medium bg-green-500 text-white hover:bg-green-600"
-            >
-              カテゴリ管理
-            </button>
-          </div>
-        </section>
+            </div>
+          </section>
+        </div>
 
-        <section>
+        {/* Content */}
+        <section className="content-section">
           {isLoading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-600">読み込み中...</p>
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p className="loading-text">読み込み中...</p>
             </div>
           ) : (
-            <MasonryGrid prints={filteredPrints} onPrintClick={handlePrintClick} />
+            <MasonryGrid prints={searchedPrints} onPrintClick={handlePrintClick} />
           )}
         </section>
 
-        <DetailModal 
-          print={selectedPrint} 
-          onClose={() => setSelectedPrint(null)}
-          onCategoryUpdate={updateCategory}
-        />
+        {/* Floating Action Button (FAB) */}
+        <Link href="/upload">
+          <div className="fab-button">
+            <AddIcon />
+          </div>
+        </Link>
 
-        {showCategoryEditor && (
+        {/* Modals */}
+        <Modal isOpen={showCategoryEditor} onClose={() => setShowCategoryEditor(false)} title="カテゴリ管理">
           <CategoryEditor 
             onClose={() => setShowCategoryEditor(false)}
             existingCategories={categories}
-            onCategoryUpdated={refreshPrints} // Refresh prints after category changes
+            onCategoryUpdated={refreshPrints}
           />
-        )}
-      </div>
-    </main>
+        </Modal>
+      </main>
+    </div>
   );
 }

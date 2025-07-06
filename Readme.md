@@ -28,7 +28,11 @@ Supabase Auth のパスワードレスメールリンク
 
 Next.js 15（App Router, TypeScript）
 
-Tailwind CSS + shadcn/ui（UI コンポーネント）
+Material Designに準拠したカスタムCSS
+
+**補足:**
+*   **CSS スタイリング**: Tailwind CSS は使用せず、Material Design に準拠したカスタムCSS を利用します。
+*   **ダイアログ/通知**: JavaScript のネイティブアラートダイアログ (`alert()`, `confirm()`, `prompt()`) は使用しません。代わりに、カスタム実装された通知 (`Notification`) および確認モーダル (`ConfirmModal`) コンポーネントを利用します。
 
 Supabase ― Auth・Storage・PostgreSQL（RLS）
 

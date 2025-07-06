@@ -11,28 +11,56 @@ export type Database = {
     Tables: {
       prints: {
         Row: {
-          category: string | null
+          category_id: string | null
           filename: string
           id: string
           metadata: Json | null
           uploaded_at: string
           url: string
+          family_member: string | null
         }
         Insert: {
-          category?: string | null
+          category_id?: string | null
           filename: string
           id?: string
           metadata?: Json | null
           uploaded_at?: string
           url: string
+          family_member?: string | null
         }
         Update: {
-          category?: string | null
+          category_id?: string | null
           filename?: string
           id?: string
           metadata?: Json | null
           uploaded_at?: string
           url?: string
+          family_member?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prints_category_id_fkey"
+            columns: ["category_id"]
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      categories: {
+        Row: {
+          id: string
+          name: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          created_at?: string
         }
         Relationships: []
       }

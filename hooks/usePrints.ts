@@ -1,24 +1,25 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { PrintData, getAllPrints, updatePrintCategory, deletePrint } from '@/lib/storage';
+import { PrintData, getAllPrints, updatePrintCategory, deletePrint, getAllCategories, Category } from '@/lib/storage';
 
-export function usePrints() {
+export function usePrints(selectedFamilyMember: string | null) {
   const [prints, setPrints] = useState<PrintData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const loadPrints = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const allPrints = await getAllPrints();
+      // 全てのプリントを取得し、そこからカテゴリを抽出
+      const allPrints = await getAllPrints(null);
       setPrints(allPrints.reverse()); // 新しい順に表示
 
       // Extract unique categories
-      const uniqueCategories = Array.from(new Set(allPrints.map(print => print.category).filter(Boolean) as string[]));
-      setCategories(uniqueCategories);
+      const allCategories = await getAllCategories();
+      setCategories(allCategories); // Add this line
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load prints');
       console.error('Failed to load prints:', err);
@@ -27,13 +28,13 @@ export function usePrints() {
     }
   }, []);
 
-  const updateCategory = useCallback(async (printId: string, category: string) => {
+  const updateCategory = useCallback(async (printId: string, categoryName: string | null) => {
     try {
-      const success = await updatePrintCategory(printId, category);
+      const success = await updatePrintCategory(printId, categoryName);
       if (success) {
         setPrints(prevPrints => 
           prevPrints.map(print => 
-            print.id === printId ? { ...print, category } : print
+            print.id === printId ? { ...print, category_name: categoryName } : print
           )
         );
         return true;
