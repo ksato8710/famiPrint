@@ -54,6 +54,7 @@ Supabase JS クライアント: https://supabase.com/docs/reference/javascript
 3-1. 重要考慮事項
 - UIUXは、常にMaterialDesign (https://m3.material.io/) を徹底的に意識してください。
 - 本サービスでのユーザーインターフェースは、/ref/ref_ui_1.png を常に参考にしてください
+- vercelにリリースしているサイト　https://fami-print-lkz6.vercel.app/
 
 3-2. 一時的な措置
 - 再起動しようとすると誤作動するため、あなたは再起動しなくてよいです
